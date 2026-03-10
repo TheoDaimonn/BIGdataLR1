@@ -1,0 +1,1 @@
+docker-compose exec -it postgres psql -U lab -d petstore_analytics -c "SELECT COUNT(*) FROM fact_sales;"

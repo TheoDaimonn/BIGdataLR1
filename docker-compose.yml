@@ -1,0 +1,22 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: petstore_dw
+    environment:
+      POSTGRES_USER: lab
+      POSTGRES_PASSWORD: lab123
+      POSTGRES_DB: petstore_analytics
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d          # скрипты инициализации
+      - ./data:/import_data:ro                     # CSV-файлы (read-only)
+    command: ["postgres", "-c", "shared_preload_libraries=pg_stat_statements"]
+
+
+volumes:
+  pgdata:
