@@ -1,38 +1,30 @@
-# BigDataSnowflake
+# BDSnowflake
 
-## Инструкция по запуску
-1) Склонировать репозиторий
-2) docker compose up --build
+Назначение: лабораторная работа по анализу больших данных. Преобразование исходных данных о зоомагазине в схему «снежинка».
 
-Развернется инстанс PostgreSQL и туда автоматически будут добавлены 1000 mock данных
+Структура проекта:
+- docker-compose.yml — PostgreSQL 15, контейнер petstore_dw, автозагрузка данных
+- check.sql — проверка данных
+- sql/01_import_mock.sql — создание таблицы mock_data и импорт 10 000 строк из CSV
+- sql/02_DDL.sql — создание измерений (dim_*) и таблицы фактов (fact_sales)
+- sql/03_DML.sql — заполнение измерений и фактов из mock_data
+- sql/04_validation.sql — валидация результата
+- data/ — 10 файлов MOCK_DATA_1.csv ... MOCK_DATA_10.csv по 1000 строк
 
-## Описание лабораторной работы
-Анализ больших данных - лабораторная работа №1 - нормализация данных в снежинку
+Запуск: docker compose up --build -d
 
-Одна из задач data engineer при работе с данными BigData трансформировать исходную модель данных источника в аналитическую модель данных. Аналитическая модель данных позволяет исследовать данные и принимать на основе полученных данных решения. Классическими универсальными схемами для анализа данных являются "звезда" и "снежинка". В лабораторной работе вам предстоит потренироваться в трансформации исходных данных из источников в модель данных снежинка.
+Подключение: host localhost, port 5432, db petstore_analytics, user lab, pass lab123
 
-Что необходимо сделать?
-
-Необходимо данные источника (файлы mock_data.csv с номерами), которые представляют информацию о покупателях, продавцах, поставщиках, магазинах, товарах для домашних питомцев трансформировать в модель снежинка/звезда (факты и измерения с нормализацией).
-
-![Лабораторная работа №1](https://github.com/user-attachments/assets/5bdd26dc-b9e5-4ddc-8df4-456d25503af4)
-
-Алгоритм:
-1. Клонируете к себе этот репозиторий.
-2. Устанавливаете себе инструмент для работы с запросами SQL (рекомендую DBeaver).
-3. Запускаете базу данных PostgreSQL (рекомендую установку через docker).
-4. Скачиваете файлы с исходными данными mock_data( * ).csv, где ( * ) номера файлов. Всего 10 файлов, каждый по 1000 строк.
-5. Импортируете данные в БД PostgreSQL (например, через механизм импорта csv в DBeaver). Всего в таблице mock_data должно находиться 10000 строк из 10 файлов.
-6. Анализируете исходные данные с помощью запросов.
-7. Выявляете сущности фактов и измерений.
-8. Реализуете скрипты DDL для создания таблиц фактов и измерений.
-9. Реализуете скрипты DML для заполнения таблиц фактов и измерений из исходных данных.
-10. Проверяете полученный результат.
-11. Отправляете результат на проверку лаборантам.
-12. Обсуждаете работу с лаборантами.
-
-Что должно быть результатом работы?
-1. Репозиторий, в котором есть исходные данные mock_data( * ).csv, где ( * ) номера файлов. Всего 10 файлов, каждый по 1000 строк.
-2. Файл docker-compose.yml с установкой PostgreSQL и заполненными данными из файлов mock_data(*).csv.
-3. Скрипты DDL (SQL) создания таблиц фактов и измерений в соответствии с моделью снежинка/звезда.
-4. Скрипты DML (SQL) заполнения таблиц фактов и измерений из исходных данных.
+Таблицы:
+- dim_country — страны (country_key, country_name)
+- dim_pet_category — категории питомцев (pet_category_key, category_name)
+- dim_pet — питомцы (pet_key, pet_type, pet_name, breed, pet_category_key)
+- dim_customer — покупатели (customer_key, source_id, first_name, last_name, age, email, postal_code, country_key, pet_key)
+- dim_seller — продавцы (seller_key, source_id, first_name, last_name, email, postal_code, country_key)
+- dim_product_category — категории товаров (category_key, category_name)
+- dim_product_brand — бренды товаров (brand_key, brand_name)
+- dim_product — товары (product_key, source_id, product_name, category_key, brand_key, price, weight, color, size, material, description, rating, reviews, release_date, expiry_date)
+- dim_store — магазины (store_key, source_id, store_name, location, city, state, country_key, phone, email)
+- dim_supplier — поставщики (supplier_key, source_id, supplier_name, contact, email, phone, address, city, country_key)
+- dim_date — измерение даты (date_key, full_date, day, month, year, quarter, day_of_week, day_name, month_name, is_weekend)
+- fact_sales — продажи (sale_key, source_id, date_key, customer_key, seller_key, product_key, store_key, supplier_key, quantity, unit_price, total_price, sale_date_original)
