@@ -1,4 +1,3 @@
--- ШАГ 1: Справочники
 
 -- Страны (сбор из всех сущностей)
 INSERT INTO dim_country (country_name)
